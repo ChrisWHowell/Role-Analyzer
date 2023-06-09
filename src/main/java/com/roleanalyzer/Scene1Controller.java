@@ -117,7 +117,7 @@ public class Scene1Controller {
                 Map<String, String> row = new HashMap<>();
                 for (int i = 0; i < csvHeaders.size(); i++) {
                     row.put(csvHeaders.get(i), fields[i]);
-                    System.out.println("csvHeaders.get(i) = " + csvHeaders.get(i) + " fields[i] = " + fields[i]);
+
                 }
 
                 String manager = row.get(managerColName);
