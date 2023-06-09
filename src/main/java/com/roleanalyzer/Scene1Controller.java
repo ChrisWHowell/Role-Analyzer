@@ -71,14 +71,29 @@ public class Scene1Controller {
         }
         else{
             String selectedFilePath = lb_importedFile.getText();
-            analyzeRoles(selectedFilePath);
+            if (checkbox_RBAC.isSelected()) {
+                String criteriamanagerRBAC = cb_RBACcol.getSelectionModel().getSelectedItem().toString();
+                double percentageRBAC = Double.parseDouble(tf_RBACperc.getText());
+                System.out.println("Calling analyzeRoles(selectedFilePath, criteriamanagerRBAC, percentageRBAC); with criteriamanagerRBAC = " + criteriamanagerRBAC + " and percentageRBAC = " + percentageRBAC);
+                analyzeRoles(selectedFilePath, criteriamanagerRBAC, percentageRBAC);
+                System.out.println("Done");
+            }
+
+            if (checkbox_PBAC.isSelected()) {
+                String criteriaPBAC = cb_PBACcol.getSelectionModel().getSelectedItem().toString();
+                double percentagePBAC = Double.parseDouble(tf_PBACperc.getText());
+                System.out.println("Calling analyzeRoles(selectedFilePath, criteriaPBAC, percentagePBAC); with criteriaPBAC = " + criteriaPBAC + " and percentagePBAC = " + percentagePBAC );
+                analyzeRoles(selectedFilePath, criteriaPBAC, percentagePBAC);
+                System.out.println("Done");
+            }
+
         }
 
         // Continue with the handling logic after the checks are passed...
     }
-    private void analyzeRoles(String selectedFilePath) {
+    private void analyzeRoles(String selectedFilePath, String managerColName, double percentage) {
         // Get selected values from combo boxes
-        String managerColName = cb_RBACcol.getSelectionModel().getSelectedItem().toString();
+        //String managerColName = cb_RBACcol.getSelectionModel().getSelectedItem().toString();
         String userColName = cb_User.getSelectionModel().getSelectedItem().toString();
         String roleColName = cb_Role.getSelectionModel().getSelectedItem().toString();
 
@@ -89,7 +104,7 @@ public class Scene1Controller {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
         // Create output file path
-        String outputFilePath = outputDirectory + File.separator + "output_" + timestamp + ".csv";
+        String outputFilePath = outputDirectory + File.separator + "output_" +managerColName+timestamp + ".csv";
 
         Map<String, Map<String, Set<String>>> managerUserRoles = new HashMap<>();
 
@@ -102,6 +117,7 @@ public class Scene1Controller {
                 Map<String, String> row = new HashMap<>();
                 for (int i = 0; i < csvHeaders.size(); i++) {
                     row.put(csvHeaders.get(i), fields[i]);
+                    System.out.println("csvHeaders.get(i) = " + csvHeaders.get(i) + " fields[i] = " + fields[i]);
                 }
 
                 String manager = row.get(managerColName);
@@ -142,7 +158,7 @@ public class Scene1Controller {
 
                 for (Map.Entry<Set<String>, Integer> entry : sharedRolesCount.entrySet()) {
                     double proportion = (double) entry.getValue() / userRoles.size();
-                    if (proportion >= 0.9) {
+                    if (proportion >= (percentage/100)) {
                         String managerInfo = managerEntry.getKey() + " has " + (proportion * 100) + "% users with shared roles.";
                         String sharedRolesInfo = "Shared roles: " + entry.getKey();
 
